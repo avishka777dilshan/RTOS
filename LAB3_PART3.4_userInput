@@ -1,0 +1,43 @@
+int LED = 2;  // onboard LED GPIO number
+String mydata;
+
+// created separated CPU1 
+void task1(void *parameters){
+  
+  for(;;){  //infinity loop
+
+    int mydelay = mydata.toInt();
+    digitalWrite(LED, HIGH);  // turn on the LED
+    vTaskDelay(mydelay / portTICK_PERIOD_MS); // 500ms delay
+    digitalWrite(LED,LOW);  //turn off the LED
+    vTaskDelay(mydelay / portTICK_PERIOD_MS); // 500ms delay
+    
+  }
+}
+
+// created separated CPU2 
+void task2(void *parameters){
+  
+  for(;;){  //infinity loop
+    
+    while(Serial.available() == 0) {
+    }
+    mydata = Serial.readString();
+    Serial.println(mydata);
+    
+  }
+}
+
+void setup() {
+
+  Serial.begin(115200); // Starts the serial communication
+  pinMode(LED, OUTPUT); // Sets the trigPin as an Output
+  xTaskCreate(task1,"Task 1",1000,NULL,1,NULL); // created and called task1 function
+  xTaskCreate(task2,"Task 2",1000,NULL,1,NULL); // created and called task2 function
+    
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+}
